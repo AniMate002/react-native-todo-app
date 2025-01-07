@@ -1,29 +1,42 @@
-import { ISortTypes } from '@/hooks/task.hook'
-import React from 'react'
+import useBasicStore from '@/store/useBasicStore'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, SectionListComponent } from 'react-native'
 
-export interface ISortTasks {
-    sortBy: ISortTypes,
-    setSortBy: React.Dispatch<React.SetStateAction<ISortTypes>>
-}
+type TsortType = "date" | "status" | "title"
+type Torder = "asc" | "desc"
 
-const SortTasks:React.FC<ISortTasks> = ({ sortBy, setSortBy }) => {
+const SortTasks:React.FC = () => {
+    const [sortType, setSortType] = useState<TsortType>("date")
+    const [order, setOrder] = useState<Torder>("asc")
+    const { sortTasks } = useBasicStore(store => store)
+    const handleSort = (localSortType: TsortType, localOrder: Torder) => {
+        if(sortType === localSortType) setOrder(order === "asc" ? "desc" : "asc")
+        else{
+            setSortType(localSortType)
+            setOrder("asc")
+        }
+    }
+    useEffect(() => {
+        sortTasks(sortType, order)
+    }, [sortType, order])
     return (
-        <View className='flex flex-row justify-evenly items-center w-full p-[10px]'>            
+        <View className='flex flex-row gap-4 items-center w-full p-[10px]'>    
+            <Text className=' font-semibold text-xl'>Sort by:</Text>
+
             <TouchableOpacity 
-            onPress={() => setSortBy("alphDesc")}
-            className='flex items-center justify-center h-[60px] w-[60px] bg-[#D9D9D9] rounded-full'>
-                <Text>A-z &darr;</Text>
+            onPress={() => handleSort("title", 'asc')}
+            className='flex items-center justify-center h-[30px] w-[60px] bg-[#7dc7ff] rounded-xl'>
+                <Text className='text-white font-semibold'>Name</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-            onPress={() => setSortBy("dateAsc")}
-            className='flex items-center justify-center h-[60px] w-[60px] bg-[#D9D9D9] rounded-full'>
-                <Text>Date &uarr;</Text>
+            onPress={() => handleSort("date", 'asc')}
+            className='flex items-center justify-center h-[30px] w-[60px] bg-[#7dc7ff] rounded-xl'>
+                <Text className='text-white font-semibold'>Date</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-            onPress={() => setSortBy("statusAsc")}
-            className='flex items-center justify-center h-[60px] w-[60px] bg-[#D9D9D9] rounded-full'>
-                <Text>Status &uarr;</Text>
+            onPress={() => handleSort("status", 'asc')}
+            className='flex items-center justify-center h-[30px] w-[60px] bg-[#7dc7ff] rounded-xl'>
+                <Text className='text-white font-semibold'>Status</Text>
             </TouchableOpacity>
             
         </View>

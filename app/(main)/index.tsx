@@ -4,50 +4,23 @@ import { useEffect, useState } from "react";
 import Task, { ITask } from "@/components/Task";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { measure } from "react-native-reanimated";
-import { useTasks } from "@/hooks/task.hook";
 import TasksList from "@/components/TasksList";
 import DateComponent from "@/components/Date/Date";
 import TodaysTasks from "@/components/TodaysTasks/TodaysTasks";
+import useBasicStore from "@/store/useBasicStore";
 
 
-
-export const dummyData: Array<ITask> = [
-  {
-    id: 1,
-    title: "Buy groceries",
-    description: "Buy fruits, vegetables, and milk from the store.",
-    status: "in progress",
-    date: (new Date()).toLocaleString(), // Current date as string
-    location: "Supermarket",
-  },
-  {
-    id: 2,
-    title: "Complete React profewfewfewfewfewfject",
-    description: "Finish the tasks for the React application by the end of the day.",
-    status: "not started",
-    date: (new Date()).toLocaleString(), // Current date as string
-    location: "Home",
-  },
-];
 
 
 
 
 export default function Index() {
-  const [task, setTask] = useState("")
-  const { tasks, addTask } = useTasks()
 
-
-
-  // const handleAddTask = () => {
-  //   Keyboard.dismiss()
-    
-  //   if(task.trim()){
-  //     addTask({title: task.trim(), status: "in progress", date: new Date().toLocalDateString(), description: "", location: ""})
-  //     setTask("");
-  //   }
-  // }  
-
+  const [recentTasks, setRecentTasks] = useState<Array<ITask>>([])
+  const { getRecentTasks } = useBasicStore()
+  useEffect(() => {
+    setRecentTasks(getRecentTasks())
+  }, [])
 
   return (
     <View className="w-screen h-screen ">
@@ -55,7 +28,7 @@ export default function Index() {
       {/* Date Info */}
       <DateComponent />
       {/* Todays tasks */}
-      <TodaysTasks tasks={dummyData}/>
+      <TodaysTasks tasks={recentTasks}/>
 
       {/* Tasks Wrapper */}
       

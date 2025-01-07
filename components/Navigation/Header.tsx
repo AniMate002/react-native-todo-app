@@ -5,12 +5,12 @@ import { View, Text, TouchableOpacity } from 'react-native'
 const Header:React.FC = () => {
     const router = useSegments()
     const stylesForActiveNavigation = "text-white font-bold text-2xl bg-black rounded-full py-[10px] px-[20px]";
-    const stylesForUnactiveNavigation = "text-[16px] text-[#464646] font-semibold"
+    const stylesForUnactiveNavigation = "text-[16px] text-[#464646] font-semibold py-[10px] px-[20px]"
     return (
         <View className='pt-[60px] flex flex-row justify-between items-center px-[20px]'>
-            <View className='flex flex-row items-center justify-center gap-4'>
+            <View className='flex flex-row items-center justify-center'>
                 <Link className={!router[1] ? stylesForActiveNavigation : stylesForUnactiveNavigation} href={"/"}>Preview</Link>
-                <Link className={router[1] === "alltasks" ? stylesForActiveNavigation : stylesForUnactiveNavigation} href={"/alltasks"}>All Tasks</Link>
+                <Link className={router.length > 1 ? stylesForActiveNavigation : stylesForUnactiveNavigation} href={"/alltasks"}>All Tasks</Link>
             </View>
 
             <Link href={"/addtask"}>

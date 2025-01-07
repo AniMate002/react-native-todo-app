@@ -1,5 +1,5 @@
 import { ITask } from '@/components/Task';
-import { useTasks } from '@/hooks/task.hook';
+import useBasicStore from '@/store/useBasicStore';
 import { useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Modal } from 'react-native'
@@ -8,7 +8,6 @@ import DatePicker from 'react-native-modern-datepicker';
 
 const Addtask = () => {
     const router = useRouter()
-    const { tasks, addTask } = useTasks()
     const [showCalendar, setShowCalendar] = useState(false)
 
     const [title, setTitle] = useState("")
@@ -16,11 +15,13 @@ const Addtask = () => {
     const [location, setLocation] = useState("")
     const [date, setDate] = useState("")
 
+    const { tasks, loadTasksFromStorage, saveTaskToStorage} = useBasicStore(state => state)
 
-    const handleAddTask = () => {
+
+    const handleAddTask = async () => {
         if(!title.trim()) return alert("Title is required!")
-        addTask({id: tasks[tasks.length - 1]?.id + 1 | 0, title: title.trim(), description: description.trim(), date, location: location.trim(), status: "in progress"})
-        console.log("New task has been added: ", {id:tasks.length, title, description, date, location, status: "in progress"})
+        saveTaskToStorage({id: tasks.length || 0, title: title.trim(), description: description.trim(), date, location: location.trim(), status: "in progress"})
+        router.dismiss()
     }
 
 
