@@ -35,17 +35,23 @@ const Alltasks = () => {
   
   
 
-  useEffect(() => {
-    sortTasks(sortBy);
-    alert("Sorting: "  + sortBy)
-  }, [sortBy])
+  // useEffect(() => {
+  //   sortTasks(sortBy);
+  //   alert("Sorting: "  + sortBy)
+  // }, [sortBy])
 
   return (
       <View className='w-screen bg-white h-full mt-[10px] rounded-t-[40px] pt-[20px] px-[10px]'>
           {/* SORT COMPONENT */}
           <SortTasks sortBy={sortBy} setSortBy={setSortBy}/>
           {/* ALL TASKS */}
-          <AllTasks tasks={dummyData}/>
+          {
+            tasks.length === 0
+            ?
+            <Text className='text-center mt-[30px] text-blue-300 font-semibold'>You don't have any tasks yet.</Text>
+            :
+            <AllTasks tasks={tasks}/>
+          }
       </View>
   )
 }

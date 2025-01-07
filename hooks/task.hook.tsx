@@ -11,6 +11,7 @@ export const useTasks = () => {
     const [tasks, setTasks] = useState<Array<ITask>>([]);
 
     useEffect(() => {
+        // AsyncStorage.removeItem(TASKS_STORAGE_KEY)
         loadTasksFromStorage();
     }, []);
     
@@ -20,6 +21,9 @@ export const useTasks = () => {
         saveTasksToStorage(updatedTasks);
     };
     
+    // useEffect(() => {
+    //   alert("NUmber of tasks: "+ tasks.length)
+    // }, [tasks])
       
      // Сохранение задач в AsyncStorage
     const saveTasksToStorage = async (tasks: Array<ITask>) => {
