@@ -47,9 +47,9 @@ const Addtask = () => {
                 <TouchableOpacity
                 // SHOW CALENDAR MODAL WINDOW
                 onPress={() =>setShowCalendar(true)} 
-                className='mt-[20px]'
+                className='mt-[40px]'
                 >
-                    <Text className='text-blue-400'>{date || "Choose date and time..."}</Text>
+                    <Text className='text-blue-400 text-xl'>{date || "Choose date and time..."}</Text>
                 </TouchableOpacity>
 
                 {/* Date and Time modal */}

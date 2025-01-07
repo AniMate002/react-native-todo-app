@@ -7,7 +7,7 @@ type Torder = "asc" | "desc"
 
 const SortTasks:React.FC = () => {
     const [sortType, setSortType] = useState<TsortType>("date")
-    const [order, setOrder] = useState<Torder>("asc")
+    const [order, setOrder] = useState<Torder>("desc")
     const { sortTasks } = useBasicStore(store => store)
     const handleSort = (localSortType: TsortType, localOrder: Torder) => {
         if(sortType === localSortType) setOrder(order === "asc" ? "desc" : "asc")

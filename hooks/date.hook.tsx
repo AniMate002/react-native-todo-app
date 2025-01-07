@@ -15,7 +15,7 @@ function useCurrentDate(): IDate {
     time: ''
   });
 
-  useEffect(() => {
+  const updateDate = () => {
     const today = new Date();
     const dayOfWeek = today.getDay();
     const dayOfMonth = today.getDate();
@@ -39,6 +39,12 @@ function useCurrentDate(): IDate {
       month: monthsOfYear[month],
       time: formattedTime
     });
+  }
+
+  useEffect(() => {
+    updateDate();
+    const interval = setInterval(updateDate, 1000)
+    return () => clearInterval(interval)
   }, []); 
 
   return dateInfo;

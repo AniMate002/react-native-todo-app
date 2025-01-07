@@ -1,5 +1,6 @@
 import AllTasks from '@/components/AllTasks/AllTasks'
 import SortTasks from '@/components/AllTasks/SortTasks';
+import NoTasks from '@/components/NoTasks/NoTasks';
 import { ITask } from '@/components/Task';
 import useBasicStore from '@/store/useBasicStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -29,7 +30,7 @@ const Alltasks = () => {
           {
             tasks?.length === 0
             ?
-            <Text className='text-center mt-[30px] text-blue-300 font-semibold'>You don't have any tasks yet.</Text>
+            <NoTasks />
             :
             <AllTasks tasks={tasks}/>
           }
