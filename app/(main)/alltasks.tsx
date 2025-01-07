@@ -1,16 +1,14 @@
 import AllTasks from '@/components/AllTasks/AllTasks'
 import SortTasks from '@/components/AllTasks/SortTasks';
 import NoTasks from '@/components/NoTasks/NoTasks';
-import { ITask } from '@/components/Task';
 import useBasicStore from '@/store/useBasicStore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 
 
 
 
-
+// A SCREEN WITH A LIST OF ALL TASKS + SORT PANEL
 const Alltasks = () => {
   const [sortBy, setSortBy] = useState("dateAsc")
 
@@ -30,7 +28,7 @@ const Alltasks = () => {
           {
             tasks?.length === 0
             ?
-            <NoTasks />
+            <NoTasks /> // SHOWING A PANEL WITH CREATE-TASK BUTTON AND A MESSAGE IF USER DOES NOT HAVE ANY TASKS
             :
             <AllTasks tasks={tasks}/>
           }

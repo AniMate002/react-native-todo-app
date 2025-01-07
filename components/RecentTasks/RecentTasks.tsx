@@ -12,7 +12,7 @@ const RecentTasks:React.FC<IRecentTasks> = ({ tasks }) => {
     return (
         <View className='w-screen bg-white h-full mt-[10px] rounded-t-[40px]'>
             <Text className='mt-[20px] text-xl font-semibold ml-[30px]'>Recent Tasks</Text>
-
+            {/* RENDERING ALL TASKS */}
             {
                 tasks.length > 0
                 ?
@@ -23,7 +23,7 @@ const RecentTasks:React.FC<IRecentTasks> = ({ tasks }) => {
                     { renderedTasks }
                 </ScrollView>
                 :
-                <NoTasks />
+                <NoTasks /> //OTHERWISE DISPLAY SPECIAL COMPONENT
             }
         </View>
     )

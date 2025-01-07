@@ -1,9 +1,9 @@
-import { ITask } from '@/components/Task';
+import AddTaskNavigation from '@/components/AddTask/AddTaskNavigation';
+import ModalCalendar from '@/components/AddTask/ModalCalendar';
 import useBasicStore from '@/store/useBasicStore';
 import { useRouter } from 'expo-router'
-import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Modal } from 'react-native'
-import DatePicker from 'react-native-modern-datepicker';
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
 
 
 const Addtask = () => {
@@ -19,22 +19,18 @@ const Addtask = () => {
 
 
     const handleAddTask = async () => {
+        // THE ONLY REQUIREMENT TO CREATE A TASK IS TO PRIVDE TITLE
         if(!title.trim()) return alert("Title is required!")
+        // SAVING TASK TO STORE AND ASYNCSTORAGE
         saveTaskToStorage({id: tasks.length || 0, title: title.trim(), description: description.trim(), date, location: location.trim(), status: "in progress"})
+        // CLOSING THIS MODAL SCREEN
         router.dismiss()
     }
-
-
     return (
         <View className='p-[20px] flex h-full justify-between'>
             <View>
-                {/* Navigation */}
-                <TouchableOpacity 
-                onPress={() => router.back()}
-                className=''
-                >
-                    <Text className='text-blue-500 font-semibold'>&larr; Create Task</Text>
-                </TouchableOpacity>
+                {/* NAVIGATION */}
+                <AddTaskNavigation />
 
                 {/* Title */}
                 <TextInput 
@@ -43,9 +39,8 @@ const Addtask = () => {
                 placeholder='Title...' 
                 className='mt-[50px] text-[33px]'/>
                 
-                {/* Date and Time Button*/}
+                {/* SHOW CALENDAR BUTTON */}
                 <TouchableOpacity
-                // SHOW CALENDAR MODAL WINDOW
                 onPress={() =>setShowCalendar(true)} 
                 className='mt-[40px]'
                 >
@@ -53,39 +48,7 @@ const Addtask = () => {
                 </TouchableOpacity>
 
                 {/* Date and Time modal */}
-                <Modal
-                    animationType='slide'
-                    transparent={true}
-                    visible={showCalendar}
-                    onRequestClose={() => setShowCalendar(false)} // Ensure modal can be closed on Android by pressing hardware back button
-                    
-                >
-                    <View className="flex-1 justify-center items-center bg-opacity-50 flex-col">
-                        <View className='w-[90%] bg-white rounded-xl p-[10px] flex items-center justify-center'>
-                            {/* DATE PICKER */}
-                            <DatePicker 
-                            onSelectedChange={date => setDate(date)}
-                            mode='datepicker' 
-                            />
-                            <View className='flex items-end justify-center flex-row gap-4'>
-                            {/* CLOSE MODAL BUTTON */}
-                                <TouchableOpacity
-                                onPress={() => setShowCalendar(false)}
-                                className='bg-blue-500 w-[100px] h-[30px] rounded-lg flex items-center justify-center'
-                                >
-                                    <Text className='text-white font-semibold '>Close</Text>
-                                </TouchableOpacity>
-                            {/* SELECT DATE BUTTON */}
-                                <TouchableOpacity
-                                onPress={() => setShowCalendar(false)}
-                                className='bg-blue-500 w-[100px] h-[30px] rounded-lg flex items-center justify-center'
-                                >
-                                    <Text className='text-white font-semibold '>Select</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </Modal>
+                <ModalCalendar setDate={setDate} showCalendar={showCalendar} setShowCalendar={setShowCalendar}/>
 
                 {/* Description */}
                 <Text className='mt-[50px] mb-2 text-lg'>Description:</Text>

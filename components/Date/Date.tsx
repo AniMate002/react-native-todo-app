@@ -1,7 +1,7 @@
 import useDate from '@/hooks/date.hook'
 import React from 'react'
 import { View, Text } from 'react-native'
-
+// DATE COMPONENT DISPLAYED IN THE HOME PAGE
 const Date: React.FC = () => {
     const date = useDate()
 

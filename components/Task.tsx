@@ -14,11 +14,15 @@ export interface ITask {
 
 const colorsArray = ["yellow", "grey", "purple", "red", "breeze", "green"]
 
+// A REUSABLE TASK COMPONENTS FOR A SINGLE TASK
 const Task: React.FC<ITask> = ({status, title, date, description, location, id}) => {
     const router = useRouter()
+    // CHOOSING COLOR NAME DEPENDING ON INDEX
     const color = colorsArray[id % colorsArray.length] || "yellow";
+    // GETTING BGCOLOR AND TEXTCOLOR FROM OBJECT USING COLOR NAME
     const bgColor = colors[color]["bg"]
     const textColor = colors[color]["text"]
+    // BY CLICKING ON ANY TASK, IT WILL REDIRECT TO A SCREEN WITH DETAILED INFO
     const handleTaskClick = () => {
         router.navigate(`/${id}`)
     }

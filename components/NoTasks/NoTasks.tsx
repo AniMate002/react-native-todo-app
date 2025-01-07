@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
-
+// DISPLAYED IN CASE USER DOES NOT HAVE ANY TASKS YET
 const NoTasks:React.FC = () => {
     const router = useRouter()
     const handleCreateTask = () => router.navigate("/addtask")

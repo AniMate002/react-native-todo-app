@@ -1,6 +1,5 @@
 import React from "react";
-import { Slot, Tabs } from "expo-router";
-import { View } from "react-native";
+import { Slot } from "expo-router";
 
 const AddTaskLayout = () => {
   return (

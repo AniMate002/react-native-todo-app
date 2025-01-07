@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import React from 'react'
+import { ScrollView } from 'react-native'
 import Task, { ITask } from '../Task'
 
 export interface IAllTasks {
     tasks: Array<ITask>
 }
 
+// A LIST OF ALL RENDERED TASKS
 const AllTasks:React.FC<IAllTasks> = ({ tasks }) => {
     let renderedTasks = tasks?.map(task => <Task key={task.id} {...task}/>);
 
