@@ -6,7 +6,7 @@ const Date: React.FC = () => {
     const date = useDate()
 
     return (
-        <View className="w-full flex items-center  flex-row mt-[30px] px-[20px]">
+        <View className="w-screen overflow-hidden flex items-center  flex-row mt-[30px] px-[20px]">
             <View className='w-[210px]'>
                 <Text className="text-[25px] font-semibold text-black">{date?.weekDay}</Text>
                 <Text className="font-bold text-[120px] mt-[-20px]">{date.monthDay}</Text>

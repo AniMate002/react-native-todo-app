@@ -21,7 +21,7 @@ const Alltasks = () => {
   
 
   return (
-      <View className='w-screen bg-white h-full mt-[10px] rounded-t-[40px] pt-[20px] px-[10px]'>
+      <View className='w-screen bg-white h-full pb-6 mt-[10px] rounded-t-[40px] pt-[20px] px-[10px]'>
           {/* SORT COMPONENT */}
           <SortTasks/>
           {/* ALL TASKS */}

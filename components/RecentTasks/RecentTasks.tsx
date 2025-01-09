@@ -10,7 +10,7 @@ export interface IRecentTasks {
 const RecentTasks:React.FC<IRecentTasks> = ({ tasks }) => {
     const renderedTasks = tasks.map(task => <Task key={task.id} {...task}/>)
     return (
-        <View className='w-screen bg-white h-full mt-[10px] rounded-t-[40px]'>
+        <View className='w-screen bg-white h-[51%]  mt-[10px] rounded-t-[40px]'>
             <Text className='mt-[20px] text-xl font-semibold ml-[30px]'>Recent Tasks</Text>
             {/* RENDERING ALL TASKS */}
             {

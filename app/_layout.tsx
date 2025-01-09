@@ -15,7 +15,7 @@ const RootLayout = () => {
     }
   }, [])
   return (
-    <View style={{ flex: 1 }} className="bg-[#E5E6E1]">
+    <View style={{ flex: 1 }} className="bg-[#E5E6E1] overflow-hidden">
       {/* Header */}
       <Header />
       {/* ALL SCREENS */}
