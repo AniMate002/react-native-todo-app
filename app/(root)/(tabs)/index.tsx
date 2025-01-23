@@ -41,7 +41,7 @@ const Home = () => {
             {/* CATEGORIES */}
             <Text className='font-rubik text-black-300 text-2xl mt-10'>Categories</Text>
             <View className='flex flex-row gap-4 mt-4'>
-                { Object.keys(categories).map((singleCategory, index) => <Category key={index} category={singleCategory} />)}
+                { Object.keys(categories).map((singleCategory, index) => <Category key={index} index={index} category={singleCategory} />)}
             </View>
 
             {/* ONGOING TASKS */}

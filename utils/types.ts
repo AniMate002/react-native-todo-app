@@ -1,3 +1,4 @@
+
 export interface IUser {
     id: string;
     name: string
@@ -9,9 +10,22 @@ export interface ITask {
     status: "in progress" | "completed" | "not started";
     description: string;
     date: string;
-    location: string;
-    attachments: Array<any>;
+    location: keyof typeof categories | string;
+    attachments: Array<IAttachment>;
     personId: string;
+    geolocation: GeolocationI;
+}
+
+export interface GeolocationI {
+    lat: number;
+    lng: number;
+}
+
+export interface IAttachment {
+    mimeType: string;
+    name: string;
+    size: number;
+    uri: string;
 }
 
 export const categories = {
