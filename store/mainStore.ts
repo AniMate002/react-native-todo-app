@@ -13,8 +13,10 @@ interface MainStoreI {
     isError: boolean;
     error: Error | null;
     getAllUsers: () => void;
-    getAuthUser: () => Promise<IUser>
+    getAuthUser: () => Promise<void>;
     createUser: (name: string) => void;
+    createNewTask: (task: ITask) => void;
+    getTasksByUserId: () => Promise<void>;
 }
 
 const useMainStore = create<MainStoreI>((set, get) => ({
@@ -55,9 +57,9 @@ const useMainStore = create<MainStoreI>((set, get) => ({
                 return
             }
 
-            set({authUser: userFromStore})
-            console.log("USER FETCHEF FROM STORAGE: ", get().authUser)
-            return userFromDatabase
+            set({authUser: userFromStore, error: null, isError: false})
+            console.log("USER FROM DATABASE: ", userFromDatabase)
+            console.log("USER FROM STORAGE: ", userFromStore)
         } catch (error) {
             console.log(error)
             set({isError: true, error: error as Error })
@@ -93,8 +95,11 @@ const useMainStore = create<MainStoreI>((set, get) => ({
         try {
             set({isLoading: true})
             if(!get().authUser?.id) return
-            const res = await fetch(`https://json-server-todo-react-native.vercel.app/tasks/personId=${get().authUser?.id}`)
-            const data = await res.json()
+            const resServer = await fetch(`https://json-server-todo-react-native.vercel.app/tasks/personId=${get().authUser?.id}`)
+            const dataServer = await resServer.json()
+            const res = await AsyncStorage.getItem(KEYS.storageKeyTasks)
+            if(!res) return 
+            const data = JSON.parse(res) as Array<ITask>
             set({tasks: data, error: null, isError: false})
         } catch (error) {
             console.log(error)
@@ -118,6 +123,7 @@ const useMainStore = create<MainStoreI>((set, get) => ({
                 },
                 body: JSON.stringify({ ...task, id })
             });
+            await AsyncStorage.setItem(KEYS.storageKeyTasks, JSON.stringify([...get().tasks, {...task, id}]))
 
             const data = await res.json()
             set({tasks: [...get().tasks, data], error: null, isError: false})            
@@ -127,6 +133,7 @@ const useMainStore = create<MainStoreI>((set, get) => ({
         }finally{
             set({isLoading: false})
         }
+        console.log("ALL TASKS IN STORE:", get().tasks)
     }
 }))
 

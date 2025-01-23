@@ -9,7 +9,8 @@ export interface ITask {
     title: string;
     status: "in progress" | "completed" | "not started";
     description: string;
-    date: string;
+    startDate: Date;
+    dueDate: Date;
     location: keyof typeof categories | string;
     attachments: Array<IAttachment>;
     personId: string;
@@ -38,5 +39,5 @@ export const categories = {
     "Others": "Others"
 }
 
-export const colors: Array<{bg: string; text: string}> = [{bg: "#E4B975",text: "#67461D"},{bg: "#B0BCBC",text: "#3B4747"},{bg: "#BBB3CC",text: "#463B63"},{bg: "#CB9CA4",text: "#5D252A"},{bg: "#9DCBC9",text: "#075C5E"},{bg: "#BFCC97",text: "#4F633B"}
+export const colors: Array<{bg: string; text: string}> = [{bg: "#E4B975",text: "#67461D"},{bg: "#B0BCBC",text: "#3B4747"},{bg: "#BBB3CC",text: "#463B63"},{bg: "#CB9CA4",text: "#5D252A"},{bg: "#9DCBC9",text: "#075C5E"},{bg: "#BFCC97",text: "#4F633B"}, { bg: "#C5A88C", text: "#5A3D2A" }
 ]

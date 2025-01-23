@@ -1,21 +1,35 @@
 import icons from '@/constants/icons'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, FlatList, StyleSheet, Alert } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, FlatList, Alert, Platform } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import images from '@/constants/images'
 import * as DocumentPicker from 'expo-document-picker';
-import { categories, GeolocationI, IAttachment } from '@/utils/types'
+import { categories, GeolocationI, IAttachment, ITask } from '@/utils/types'
 
-import { LatLng, LeafletView, WebviewLeafletMessage } from 'react-native-leaflet-view';
+import { WebviewLeafletMessage } from 'react-native-leaflet-view';
+import useMainStore from '@/store/mainStore'
+import Map from '@/components/Map'
 
 const Create = () => {
+    const { createNewTask, authUser } = useMainStore()
+    const [title, setTitle] = useState<string>("")
+    const [description, setDescription] = useState<string>("")
     const [startDate, setStartDate] = useState<Date>(new Date())
     const [dueDate, setDueDate] = useState<Date>(new Date())
-    const [attachments, setAttachments] = useState<Array<IAttachment>>([])
     const [location, setLocation] = useState<keyof typeof categories | string>("")
+    const [attachments, setAttachments] = useState<Array<IAttachment>>([])
     const [geolocation, setGeolocation] = useState<GeolocationI>({lat: 1.305587412732045, lng: 103.83318545292657})
+
+    const [showStartDateModal, setShowStartDateModal] = useState<boolean>(false)
+    const [showDueDateModal, setShowDueDateModal] = useState<boolean>(false)
+
+
+    const isImage = (mimeType: string) => {
+        return mimeType === "image/jpeg" ||
+        mimeType === "image/png" ||
+        mimeType === "image/jpg" ||
+        mimeType === "application/pdf"
+    }
 
     const handlePickFiles = async () => {
         try {
@@ -45,16 +59,33 @@ const Create = () => {
         }
     }
 
-    const isImage = (mimeType: string) => {
-        return mimeType === "image/jpeg" ||
-        mimeType === "image/png" ||
-        mimeType === "image/jpg" ||
-        mimeType === "application/pdf"
+    const handleCreateTask = () => {
+        // TODO: HANDLE TRIM FOR TITLE AND DESCRIPTION
+        if(!title){
+            return Alert.alert("Title is required", "Please enter the title of the task")
+        }
+        const newTask: ITask = {
+            id: "",
+            title,
+            description,
+            startDate,
+            dueDate,
+            location,
+            attachments,
+            geolocation,
+            status: "in progress",
+            personId: authUser?.id || ""
+        }
+
+        createNewTask(newTask)
+        router.back()
+
     }
 
+    
+
     return (
-        <SafeAreaView className='h-full px-8 '>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='pb-20'>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='px-8 -py-10 mt-10'>
                 {/* HEADER */}
                 <View className='flex flex-row  items-center mt-4'>
                     <TouchableOpacity
@@ -72,6 +103,8 @@ const Create = () => {
                 <View className='mt-10 text-black-300'>
                     <Text className='font-rubik-medium'>Task name</Text>
                     <TextInput 
+                    value={title}
+                    onChangeText={text => setTitle(text)}
                     placeholder='Enter task name'
                     className='p-4 border-2 border-[#EBEBEB] rounded-full mt-2 text-black-300 focus:border-primary'/>
                 </View>
@@ -80,6 +113,8 @@ const Create = () => {
                 <View className='mt-10 text-black-300'>
                     <Text className='font-rubik-medium'>Description</Text>
                     <TextInput 
+                    value={description}
+                    onChangeText={text => setDescription(text)}
                     placeholder='Describe everything in detail'
                     multiline={true}
                     className='p-4 border-2 border-[#EBEBEB] rounded-xl mt-2 text-black-300 w-full h-[80px] focus:border-primary'/>
@@ -89,30 +124,54 @@ const Create = () => {
                 <View className='flex items-center justify-between mt-10 w-full flex-row'>
                     {/* START DATE */}
                         <Text className='font-rubik-medium'>Start Date</Text>
-                        <DateTimePicker
-                        testID="dateTimePicker"
-                        value={startDate}
-                        mode={"datetime"}
-                        // is24Hour={true}
-                        onChange={(event, selectedDate) => {
-                            setStartDate(selectedDate || new Date())
-                        }}
-                        />    
+                        {
+                            Platform.OS === "ios" || showStartDateModal
+                            ?
+                            <DateTimePicker
+                            maximumDate={new Date(dueDate) || new Date()}
+                            display='default'
+                            value={startDate}
+                            mode={"datetime"}
+                            onChange={(event, selectedDate) => {
+                                setShowStartDateModal(false)
+                                console.log("CHANGING DATE")
+                                setStartDate(selectedDate || new Date())
+                            }}
+                            />
+                            :
+                            <TouchableOpacity onPress={() => setShowStartDateModal(true)}>
+                                <Text className='rounded-xl p-2 bg-[#EBEBEB]'>{new Date(startDate).toDateString()}</Text>
+                            </TouchableOpacity>
+
+                        }   
                 </View>
 
                 {/* DUE DATE */}
                 <View className='flex items-center justify-between mt-4 w-full flex-row'>
                     {/* START DATE */}
                         <Text className='font-rubik-medium'>Due Date</Text>
-                        <DateTimePicker
-                        testID="dateTimePicker"
-                        value={dueDate}
-                        mode={"datetime"}
-                        // is24Hour={true}
-                        onChange={(event, selectedDate) => {
-                            setDueDate(selectedDate || new Date())
-                        }}
-                        />    
+                        {
+                            Platform.OS === "ios" || showDueDateModal
+                            ?
+                            <DateTimePicker
+                            // TODO: ADD MIN DATE EQUAL TO START DATE
+                            minimumDate={new Date(startDate) || new Date()}
+                            display='compact'
+                            value={dueDate}
+                            mode={"datetime"}
+                            // is24Hour={true}
+                            onChange={(event, selectedDate) => {
+                                setShowDueDateModal(false)
+                                console.log("CHANGING DATE")
+                                setDueDate(selectedDate || new Date())
+                            }}
+                            />
+                            :
+                            <TouchableOpacity onPress={() => setShowDueDateModal(true)}>
+                                <Text className='rounded-xl p-2 bg-[#EBEBEB]'>{new Date(dueDate).toDateString()}</Text>
+                            </TouchableOpacity>
+
+                        }
                 </View>
 
                 {/* LOCATION / CATEGORY */}
@@ -187,37 +246,23 @@ const Create = () => {
                 </View>
 
 
-                {/* GEOLOCATION PICKER */}
-                <Text className='font-rubik-medium mt-10'>Geolocation</Text>
-                <View className='mt-2 h-[200px]'>
-                    <LeafletView
-                    onMessageReceived={e => handleAddMapMarker(e)}
-                    doDebug={true}
-                    zoom={15}
-                    // mapCenterPosition={{ lat: geolocation.lat, lng: geolocation.lng }}
-                    mapMarkers={[
-                        {
-                          id: 'location-marker',
-                          icon: 'https://cdn-icons-png.flaticon.com/64/2776/2776067.png',
-                          size: [64, 64],
-                          iconAnchor: [32, 64],
-                          position: {
-                            lat: geolocation.lat,
-                            lng: geolocation.lng,
-                          },
-                        },
-                      ]}
-                      mapLayers={[
-                        {
-                          baseLayer: true,
-                          url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        },
-                      ]}
-                    />
-                </View>
+                {/* MAP */}
+                {
+                    Platform.OS === "ios"
+                    ?
+                    <Map geolocation={geolocation} handleAddMapMarker={handleAddMapMarker}/>
+                    :
+                    null
+                }
+
+                {/* CREATE BUTTON */}
+                <TouchableOpacity onPress={handleCreateTask}>
+                    <View className='flex items-center justify-center bg-emerald-500 rounded-full p-4 mt-8'>
+                        <Text className='text-white font-rubik-medium'>Create Task</Text>
+                    </View>
+                </TouchableOpacity>
 
             </ScrollView>
-        </SafeAreaView>
     )
 }
 
