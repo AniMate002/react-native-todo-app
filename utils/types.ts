@@ -1,13 +1,16 @@
 
 export interface IUser {
     id: string;
-    name: string
+    name: string;
+    avatar: string;
 }
+
+export type StatusType = "in progress" | "completed" | "not started"
 
 export interface ITask {
     id: string;
     title: string;
-    status: "in progress" | "completed" | "not started";
+    status: StatusType;
     description: string;
     startDate: Date;
     dueDate: Date;
@@ -27,6 +30,14 @@ export interface IAttachment {
     name: string;
     size: number;
     uri: string;
+}
+
+export type LogType = "task created" | "changed status" | "updated avatar" | "task deleted"
+export interface ILog {
+    type: LogType;
+    timestamp: Date;
+    taskId?: string;
+    status?: StatusType;
 }
 
 export const categories = {

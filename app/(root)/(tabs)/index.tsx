@@ -19,11 +19,12 @@ const Home = () => {
     }, [])
     
     return (
-        <SafeAreaView className='mx-8'>
             <FlatList 
             showsVerticalScrollIndicator={false}
             numColumns={1}
             data={tasks}
+            className='px-8 pt-10'
+            contentContainerClassName='pb-40'
             keyExtractor={(item) => item.id}
             renderItem={({item}) => <TaskCard {...item}/>}
             ListHeaderComponent={(
@@ -53,19 +54,14 @@ const Home = () => {
 
                     {/* CATEGORIES */}
                     <Text className='font-rubik text-black-300 text-2xl mt-10'>Categories</Text>
-                    {
-                        isLoading 
-                        ?
-                        <ActivityIndicator size={"large"}/>
-                        :
-                        <FlatList 
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerClassName="flex flex-row gap-2 mt-2"
-                        data={Object.keys(categories)}
-                        renderItem={({item, index}) => <Category category={item} index={index}/>}
-                        />
-                    }
+                    <FlatList 
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName="flex flex-row gap-2 mt-2"
+                    data={Object.keys(categories)}
+                    renderItem={({item, index}) => <Category category={item} index={index}/>}
+                    />
+
 
                     {/* ONGOING TASKS */}
                     <View className='mt-10'>
@@ -78,7 +74,6 @@ const Home = () => {
                 </>
             )}
             />
-        </SafeAreaView>
     )
 }
 

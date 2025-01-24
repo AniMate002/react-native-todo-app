@@ -12,12 +12,12 @@ const Map = React.memo(({ handleAddMapMarker, geolocation} : MapProps) => {
     return (
         <>
         {/* GEOLOCATION PICKER */}
-        <Text className='font-rubik-medium mt-10'>Geolocation</Text>
             <View className='mt-2 h-[200px] rounded-xl overflow-hidden'>
                 <LeafletView
                 onMessageReceived={e => handleAddMapMarker(e)}
                 doDebug={true}
                 zoom={15}
+                mapCenterPosition={geolocation}
                 // mapCenterPosition={{ lat: geolocation.lat, lng: geolocation.lng }}
                 mapMarkers={[
                     {

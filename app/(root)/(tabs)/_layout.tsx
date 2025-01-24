@@ -21,6 +21,12 @@ const TabsLayout = () => {
                 headerShown: false,
             }}/>
 
+            <Tabs.Screen 
+            name='explore' 
+            options={{
+                title: "Explore", 
+                headerShown: false,
+            }}/>
 
             <Tabs.Screen 
             name='profile' 

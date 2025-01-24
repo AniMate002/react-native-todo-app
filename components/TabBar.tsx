@@ -14,13 +14,14 @@ export function TabBar({ state, descriptors, navigation } : BottomTabBarProps) {
     index: (props: any) => <Feather name='home' size={24} color={props.focused ? "#36374B" : "#7E868F"} />,
     create: (props: any) => <Feather name='plus' size={24} color={props.focused ? "#36374B" : "#7E868F"} />,
     profile: (props: any) => <Feather name='user' size={24} color={props.focused ? "#36374B" : "#7E868F"} />,
+    explore: (props: any) => <Feather name='compass' size={24} color={props.focused ? "#36374B" : "#7E868F"}/>
   }
 
   return (
-    <View className='absolute bottom-[50] w-full flex flex-row items-center justify-center'>
+    <View className='absolute bottom-[30] w-full flex flex-row items-center justify-center'>
         <View 
         style={{shadowColor: "#000", shadowOffset: {width: 0, height:10}, shadowRadius: 10, shadowOpacity: 0.1}}  
-        className='flex-row bg-white text-center justify-between items-center py-[15] rounded-[35] w-1/2'>
+        className='flex-row bg-white text-center justify-between items-center py-[15] rounded-[35] w-2/3'>
         {state.routes.map((route, index) => {
             const { options } = descriptors[route.key];
             const label =

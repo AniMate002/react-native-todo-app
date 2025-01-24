@@ -16,7 +16,7 @@ const Create = () => {
     const [description, setDescription] = useState<string>("")
     const [startDate, setStartDate] = useState<Date>(new Date())
     const [dueDate, setDueDate] = useState<Date>(new Date())
-    const [location, setLocation] = useState<keyof typeof categories | string>("")
+    const [location, setLocation] = useState<keyof typeof categories | string>("Others")
     const [attachments, setAttachments] = useState<Array<IAttachment>>([])
     const [geolocation, setGeolocation] = useState<GeolocationI>({lat: 1.305587412732045, lng: 103.83318545292657})
 
@@ -85,7 +85,7 @@ const Create = () => {
     
 
     return (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='px-8 -py-10 mt-10'>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='px-8 -py-10 pb-40 mt-10'>
                 {/* HEADER */}
                 <View className='flex flex-row  items-center mt-4'>
                     <TouchableOpacity
@@ -250,7 +250,10 @@ const Create = () => {
                 {
                     Platform.OS === "ios"
                     ?
-                    <Map geolocation={geolocation} handleAddMapMarker={handleAddMapMarker}/>
+                    <>
+                        <Text className='font-rubik-medium mt-10'>Geolocation</Text>
+                        <Map geolocation={geolocation} handleAddMapMarker={handleAddMapMarker}/>
+                    </>
                     :
                     null
                 }

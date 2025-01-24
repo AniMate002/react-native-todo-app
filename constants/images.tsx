@@ -6,6 +6,7 @@ import Cooking from "@/assets/images/Cooking.png"
 import Shopping from "@/assets/images/Shopping.png"
 import Job from "@/assets/images/Job.png"
 import Others from "@/assets/images/Others.png"
+import AvatarPlaceholder from "@/assets/images/avatar_placeholder.png"
 
 export default {
     signup,
@@ -15,5 +16,6 @@ export default {
     Cooking,
     Shopping,
     Job,
-    Others
+    Others,
+    AvatarPlaceholder
 } as {[key: string]: any}
