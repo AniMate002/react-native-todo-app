@@ -61,11 +61,21 @@ const Create = () => {
         }
     }
 
+    const resetAllFields = () => {
+        setTitle("")
+        setDescription("")
+        setAttachments([])
+        setLocation("Others")
+        setGeolocation({lat: 1.305587412732045, lng: 103.83318545292657})
+        setStartDate(new Date())
+        setDueDate(new Date())
+    }
+
     const handleCreateTask = () => {
         if(!title.trim()){
             return Alert.alert("Title is required", "Please enter the title of the task")
         }
-        // TODO: CHECK IF START DATE GREATER THAN DUE DATE
+        if(dueDate.getTime() < startDate.getDate()) return Alert.alert("Wrongs date", "Start date can not be later than Due date.")
         const newTask: ITask = {
             id: "",
             title: title.trim(),
@@ -82,6 +92,7 @@ const Create = () => {
 
         createNewTask(newTask)
         router.back()
+        resetAllFields()
 
     }
 

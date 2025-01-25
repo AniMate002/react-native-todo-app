@@ -3,12 +3,14 @@ import useMainStore from '@/store/mainStore'
 import { KEYS } from '@/utils/keys'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Redirect, router } from 'expo-router'
+import { useColorScheme } from 'nativewind'
 import React, { useState } from 'react'
-import { View, Text, SafeAreaView, Image, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, SafeAreaView, Image, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native'
 
 const SignUp = () => {
     const [name, setName] = useState<string>("")
     const { createUser, authUser, isLoading } = useMainStore()
+    const { colorScheme } = useColorScheme()
 
     const handleCreateUser = () => {
         if(!name.trim()) return
@@ -25,6 +27,10 @@ const SignUp = () => {
     if(authUser) return <Redirect href={"/"}/>
     return (
         <SafeAreaView className='w-full h-full bg-secondary dark:bg-[#111111]'>
+            <StatusBar
+                barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+                backgroundColor={colorScheme === 'dark' ? '#111111' : "#f5f5f5"}
+            />
             <ScrollView className='w-full h-screen'>
                 <Image source={images.signup} resizeMode='contain' className='w-full h-[300px]'/>
 
