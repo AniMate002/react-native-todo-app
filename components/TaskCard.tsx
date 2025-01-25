@@ -22,7 +22,7 @@ const TaskCard = React.memo(({ title, status, location, startDate, dueDate, id }
             onPress={() => router.navigate(`/properties/${id}`)}
             activeOpacity={0.8}
             style={{ backgroundColor: randomColor.bg }}
-            className='w-full rounded-2xl py-4 px-6 mt-4 h-[180px] flex flex-col'>
+            className='w-full rounded-2xl py-4 px-6 mt-4 h-[180px] flex flex-col shadow-none dark:shadow-lg  dark:shadow-black-200'>
             <View className='flex flex-row items-start justify-between w-full'>
                 <Text style={{ color: randomColor.text }} className='w-2/3 text-2xl font-rubik-semibold'>{title}</Text>
                 <Text className='bg-black-300 text-white font-rubik-medium py-2 px-4 rounded-full'>{status}</Text>

@@ -1,7 +1,7 @@
 import icons from '@/constants/icons'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, FlatList, Alert, Platform } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, FlatList, Alert, Platform, SafeAreaView } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import { categories, GeolocationI, IAttachment, ITask } from '@/utils/types'
@@ -9,6 +9,11 @@ import { categories, GeolocationI, IAttachment, ITask } from '@/utils/types'
 import { WebviewLeafletMessage } from 'react-native-leaflet-view';
 import useMainStore from '@/store/mainStore'
 import Map from '@/components/Map'
+import Header from '@/components/Header';
+import Attachments from '@/components/Attachments';
+import { Feather } from '@expo/vector-icons';
+import IOSTimePicker from '@/components/IOSTimePicker';
+import AndroidTimePicker from '@/components/AndroidTimePicker';
 
 const Create = () => {
     const { createNewTask, authUser } = useMainStore()
@@ -19,9 +24,6 @@ const Create = () => {
     const [location, setLocation] = useState<keyof typeof categories | string>("Others")
     const [attachments, setAttachments] = useState<Array<IAttachment>>([])
     const [geolocation, setGeolocation] = useState<GeolocationI>({lat: 1.305587412732045, lng: 103.83318545292657})
-
-    const [showStartDateModal, setShowStartDateModal] = useState<boolean>(false)
-    const [showDueDateModal, setShowDueDateModal] = useState<boolean>(false)
 
 
     const isImage = (mimeType: string) => {
@@ -60,21 +62,22 @@ const Create = () => {
     }
 
     const handleCreateTask = () => {
-        // TODO: HANDLE TRIM FOR TITLE AND DESCRIPTION
-        if(!title){
+        if(!title.trim()){
             return Alert.alert("Title is required", "Please enter the title of the task")
         }
+        // TODO: CHECK IF START DATE GREATER THAN DUE DATE
         const newTask: ITask = {
             id: "",
-            title,
-            description,
+            title: title.trim(),
+            description: description.trim(),
             startDate,
             dueDate,
-            location,
+            location: location || "Others",
             attachments,
             geolocation,
             status: "in progress",
-            personId: authUser?.id || ""
+            personId: authUser?.id || "",
+            timestamp: new Date()
         }
 
         createNewTask(newTask)
@@ -85,103 +88,75 @@ const Create = () => {
     
 
     return (
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='px-8 -py-10 pb-40 mt-10'>
+        <View className='h-full dark:bg-[#111111]'>
+            <SafeAreaView />
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName='px-8 pb-40'>
                 {/* HEADER */}
-                <View className='flex flex-row  items-center mt-4'>
-                    <TouchableOpacity
-                    onPress={() => router.back()}>
-                        <View className='flex items-center justify-center size-16 bg-[#EBEBEB] rounded-full '>
-                            <Image source={icons.backArrow} className='size-6'/>
-                        </View>
-                    </TouchableOpacity>
-                    <Text className='font-rubik-medium ml-auto mr-auto'>Create Another Awesome Task</Text>
-                    <Image source={icons.bell} className='size-6'/>
-                </View>
+                <Header title='Create Antother Awesome Task' customArrowButtonHandler={() => router.back()}/>
 
                 {/* FORM */}
                 {/* TITLE */}
-                <View className='mt-10 text-black-300'>
-                    <Text className='font-rubik-medium'>Task name</Text>
+                <View className='mt-10 '>
+                    <Text className='font-rubik-medium text-black-300 dark:text-white'>Task name</Text>
                     <TextInput 
                     value={title}
                     onChangeText={text => setTitle(text)}
                     placeholder='Enter task name'
-                    className='p-4 border-2 border-[#EBEBEB] rounded-full mt-2 text-black-300 focus:border-primary'/>
+                    className='px-4 py-4 border-2 placeholder:text-gray-400 border-[#EBEBEB] dark:border-[#212622] rounded-full mt-2 text-black-300 dark:text-white focus:border-primary'/>
                 </View>
 
                 {/* DESCRIPTION */}
-                <View className='mt-10 text-black-300'>
-                    <Text className='font-rubik-medium'>Description</Text>
+                <View className='mt-10'>
+                    <Text className='font-rubik-medium text-black-300 dark:text-white'>Description</Text>
                     <TextInput 
                     value={description}
                     onChangeText={text => setDescription(text)}
                     placeholder='Describe everything in detail'
                     multiline={true}
-                    className='p-4 border-2 border-[#EBEBEB] rounded-xl mt-2 text-black-300 w-full h-[80px] focus:border-primary'/>
+                    className='p-4 border-2 placeholder:text-gray-400 border-[#EBEBEB] dark:border-[#212622] rounded-xl mt-2 text-black-300 dark:text-white w-full h-[80px] focus:border-primary'/>
                 </View>
 
                 {/* START DATE */}
                 <View className='flex items-center justify-between mt-10 w-full flex-row'>
-                    {/* START DATE */}
-                        <Text className='font-rubik-medium'>Start Date</Text>
+                        {/* START DATE */}
+                        <Text className='font-rubik-medium text-black-300 dark:text-white'>Start Date</Text>
                         {
-                            Platform.OS === "ios" || showStartDateModal
+                            Platform.OS === "ios"
                             ?
-                            <DateTimePicker
-                            maximumDate={new Date(dueDate) || new Date()}
-                            display='default'
-                            value={startDate}
-                            mode={"datetime"}
-                            onChange={(event, selectedDate) => {
-                                setShowStartDateModal(false)
+                            <IOSTimePicker dateAndTime={startDate} maxDate={dueDate} onChange={(event, selectedDate) => {
                                 console.log("CHANGING DATE")
                                 setStartDate(selectedDate || new Date())
-                            }}
-                            />
+                            }}/>
                             :
-                            <TouchableOpacity onPress={() => setShowStartDateModal(true)}>
-                                <Text className='rounded-xl p-2 bg-[#EBEBEB]'>{new Date(startDate).toDateString()}</Text>
-                            </TouchableOpacity>
-
+                            <AndroidTimePicker dateAndTime={startDate} maxDate={dueDate} setFullDateAndTime={setStartDate}/>
                         }   
                 </View>
 
                 {/* DUE DATE */}
                 <View className='flex items-center justify-between mt-4 w-full flex-row'>
-                    {/* START DATE */}
-                        <Text className='font-rubik-medium'>Due Date</Text>
+                        {/* DUE DATE */}
+                        <Text className='font-rubik-medium text-black-300 dark:text-white'>Due Date</Text>
                         {
-                            Platform.OS === "ios" || showDueDateModal
+                            Platform.OS === "ios"
                             ?
-                            <DateTimePicker
-                            // TODO: ADD MIN DATE EQUAL TO START DATE
-                            minimumDate={new Date(startDate) || new Date()}
-                            display='compact'
-                            value={dueDate}
-                            mode={"datetime"}
-                            // is24Hour={true}
-                            onChange={(event, selectedDate) => {
-                                setShowDueDateModal(false)
+                            <IOSTimePicker dateAndTime={dueDate} minDate={startDate} onChange={(event, selectedDate) => {
                                 console.log("CHANGING DATE")
                                 setDueDate(selectedDate || new Date())
-                            }}
-                            />
+                            }}/>
                             :
-                            <TouchableOpacity onPress={() => setShowDueDateModal(true)}>
-                                <Text className='rounded-xl p-2 bg-[#EBEBEB]'>{new Date(dueDate).toDateString()}</Text>
-                            </TouchableOpacity>
-
+                            <AndroidTimePicker dateAndTime={dueDate} minDate={startDate} setFullDateAndTime={setDueDate}/>
                         }
+                        
                 </View>
 
                 {/* LOCATION / CATEGORY */}
                 <View className='mt-10'>
-                    <Text className='font-rubik-medium'>Location/Category</Text>
+                    <Text className='font-rubik-medium text-black-300 dark:text-white'>Location/Category</Text>
                     <TextInput 
                     value={location}
                     onChangeText={text => setLocation(text)}
                     placeholder='Enter location manually or select from the list'
-                    className='p-4 border-2 border-[#EBEBEB] rounded-full mt-2 text-black-300 focus:border-primary'/>
+                    className='p-4 border-2 placeholder:text-gray-400 placeholder:text-sm border-[#EBEBEB] dark:border-[#212622] rounded-full mt-2 text-black-300 dark:text-white focus:border-primary'/>
                     <View className='flex flex-wrap flex-row items-center gap-2 mt-2'>
                         <FlatList 
                         data={Object.keys(categories)}
@@ -193,8 +168,8 @@ const Create = () => {
                             <TouchableOpacity 
                             onPress={() => setLocation(item)}
                             key={index} 
-                            className={`${item === location ? "bg-emerald-500" : "bg-[#EBEBEB]"} px-12 py-4 rounded-full`}>
-                                    <Text className={`${item === location ? "font-rubik-medium text-white" : "font-rubik text-black-300"}`}>{item}</Text>
+                            className={`${item === location ? "bg-emerald-500" : "bg-[#EBEBEB] dark:bg-[#414440]"} px-12 py-4 rounded-full`}>
+                                    <Text className={`${item === location ? "font-rubik-medium text-white" : "font-rubik text-black-300 dark:text-white"}`}>{item}</Text>
                                 </TouchableOpacity>
                         )}
                         />
@@ -204,43 +179,22 @@ const Create = () => {
 
                 {/* ATTACHMENT */}
                 <View className='mt-10'>
-                        <Text className='font-rubik-medium'>Attachments</Text>  
+                        <Text className='font-rubik-medium text-black-300 dark:text-white'>Attachments</Text>  
                         {/* RENDERED PICKED IMAGES */}
                         {
                             attachments.length > 0
                             ?
-                            <View className='flex items-center justify-center gap-4 flex-row mt-2 flex-wrap group-last:justify-start'>
-                                {attachments.filter(singleAttachment => isImage(singleAttachment.mimeType)).map((attachment, index) => (
-                                    <TouchableOpacity 
-                                    onPress={() => handleDeleteAttachment(attachment.name)}
-                                    key={index} 
-                                    className='flex items-center gap-2'>
-                                        <Image source={{uri: attachment.uri}} className='size-24 rounded-xl'/>
-                                        <Text>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                                {attachments.filter(singleAttachment => !isImage(singleAttachment.mimeType)).map((attachment, index) => (
-                                    <TouchableOpacity 
-                                    onPress={() => handleDeleteAttachment(attachment.name)}
-                                    key={index} 
-                                    className='flex items-center gap-2'>
-                                        <View className='flex items-center justify-center size-24 rounded-xl bg-emerald-500  border-emerald-700 '>
-                                            <Text className='text-white font-rubik-medium'>File .{attachment.name.split(".").pop()}</Text>
-                                        </View>
-                                        <Text>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                            <Attachments attachments={attachments} handleDeleteAttachment={handleDeleteAttachment}/>
                             :
                             null
                         }
                         <TouchableOpacity
                         onPress={handlePickFiles}
                         >
-                            <View className='flex items-center justify-center rounded-xl bg-[#EBEBEB] p-4 h-[100px] w-full mt-2 border-2 border-dashed border-emerald-500'>
-                                <Image source={icons.info} className='size-6 bg-'/>
-                                <Text>Upload the files</Text>
-                                <Text className='text-sm text-black-200'>Max file size: 5MB</Text>
+                            <View className='flex items-center justify-center rounded-xl bg-[#EBEBEB] dark:bg-[#212622] p-4 h-[110px] w-full mt-2 border-2 border-dashed border-emerald-500'>
+                                <Feather name='file-plus' size={24} color={"#585B58"}/>
+                                <Text className='text-black-300 dark:text-white mt-1'>Upload the files</Text>
+                                <Text className='text-sm text-black-200 dark:text-black-100'>Max file size: 50MB</Text>
                             </View>
                         </TouchableOpacity>
                 </View>
@@ -251,7 +205,7 @@ const Create = () => {
                     Platform.OS === "ios"
                     ?
                     <>
-                        <Text className='font-rubik-medium mt-10'>Geolocation</Text>
+                        <Text className='font-rubik-medium mt-10 text-black-300 dark:text-white'>Geolocation</Text>
                         <Map geolocation={geolocation} handleAddMapMarker={handleAddMapMarker}/>
                     </>
                     :
@@ -266,6 +220,7 @@ const Create = () => {
                 </TouchableOpacity>
 
             </ScrollView>
+        </View>
     )
 }
 

@@ -4,9 +4,12 @@ import icons from '@/constants/icons'
 import useMainStore from '@/store/mainStore'
 import { categories, ITask } from '@/utils/types'
 import React, { useEffect, useMemo, useState } from 'react'
-import { View, Text, FlatList, ActivityIndicator, Image, TouchableOpacity, TextInput, Alert } from 'react-native'
-import {Picker} from '@react-native-picker/picker';
+import { View, Text, FlatList, ActivityIndicator, Image, TouchableOpacity, TextInput, Alert, SafeAreaView } from 'react-native'
 import { Feather } from '@expo/vector-icons'
+import ThemeChangeButton from '@/components/ThemeChangeButton'
+import Header from '@/components/Header'
+import SearchForm from '@/components/SearchForm'
+import { router } from 'expo-router'
 
 const Explore = () => {
     const { tasks, getTasksByUserId, isLoading } = useMainStore()
@@ -16,8 +19,7 @@ const Explore = () => {
     const [searchQuery, setSearchQuery] = useState<string>("")
 
     // PICKER STATE
-    const [sortType, setSortType] = useState<"dueDate" | "title" | "status" | null>(null);
-    const [showDatePicker, setShoDatePicker] = useState<boolean>(false)
+    const [sortType, setSortType] = useState<"dueDate" | "title" | "status" | "timeStamp">("timeStamp");
 
     useEffect(() => {
         getTasksByUserId()
@@ -44,6 +46,8 @@ const Explore = () => {
                 return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
             } else if (sortType === 'status') {
                 return a.status.localeCompare(b.status); 
+            }else if (sortType === 'timeStamp'){
+                return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
             }
             return 0;
         });
@@ -53,81 +57,52 @@ const Explore = () => {
 }, [tasks, location, searchQuery, sortType]);
 
     return (
-        <FlatList 
-        data={filteredTasks}
-        className='px-8 pt-10'
-        contentContainerClassName='pb-40'
-        keyExtractor={(item) => item.id}
-        renderItem={({item, index}) => <TaskCard {...item}/>}
-        ListEmptyComponent={
-            isLoading 
-            ?
-            <ActivityIndicator size={"large"}/>
-            :
-            <NoResult />
-        }
-        ListHeaderComponent={
-            <View>
-                <View className='flex items-center flex-row mt-4'>
-                    <View className='flex items-center justify-center size-16 bg-[#EBEBEB] rounded-full'>
-                        <Image source={icons.backArrow} className='size-6'/>
-                    </View>
-                    <Text className='font-rubik-medium ml-auto mr-auto'>Search For Your Tasks</Text>
-                    <Image source={icons.bell} className='size-6'/>
-                </View>
+        <View className='dark:bg-[#111111] h-full'>
+            <SafeAreaView />
+            <FlatList 
+                    data={filteredTasks}
+                    className='px-8'
+                    contentContainerClassName='pb-40'
+                    keyExtractor={(item) => item.id}
+                    renderItem={({item, index}) => <TaskCard {...item}/>}
+                    ListEmptyComponent={
+                        isLoading 
+                        ?
+                        <ActivityIndicator size={"large"}/>
+                        :
+                        <NoResult />
+                    }
+                    ListHeaderComponent={
+                        <View>
+                            {/* HEADER */}
+                            <Header title='Search for Your Tasks' customArrowButtonHandler={() => router.back()}/>
 
-                {/* SEARCH */}
-                <View className='flex flex-row items-center justify-between mt-8'>
-                    <View className='flex items-center flex-row bg-[#EBEBEB] rounded-full px-4 py-2 w-3/4'>
-                        <TouchableOpacity>
-                            <Image source={icons.search} className='size-8'/>
-                        </TouchableOpacity>
-                        <TextInput 
-                        value={searchQuery}
-                        onChangeText={text => setSearchQuery(text)}
-                        placeholder='Search' 
-                        className='text-2xl p-4 w-full'/>
-                    </View>
+                            {/* SEARCH */}
+                            <SearchForm searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSortType={setSortType} sortType={sortType}/>
 
-                    <TouchableOpacity onPress={() => setShoDatePicker(prev => !prev)}>
-                        <View className='bg-black-300 rounded-full p-4'>
-                            <Image source={icons.filter} className='size-8'/>
+                            
+
+                            {/* TPYE/LOCATION */}
+                            <FlatList 
+                                data={Object.keys(categories)}
+                                keyExtractor={(item, index) => index.toString()}
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerClassName='flex flex-row gap-2 mt-4'
+                                renderItem={({item, index}) => (
+                                    <TouchableOpacity 
+                                    onPress={() => setLocation(item === location ? "" : item)}
+                                    key={index} 
+                                    className={`${item === location ? "bg-emerald-500" : "bg-[#EBEBEB] dark:bg-[#414440]"} px-12 py-4 rounded-full`}>
+                                            <Text className={`${item === location ? "font-rubik-medium text-white" : "font-rubik text-black-300 dark:text-white"}`}>{item}</Text>
+                                        </TouchableOpacity>
+                                )}
+                            />
                         </View>
-                    </TouchableOpacity>
-
-                </View>
-                    <Picker
-                    style={{margin: 0, marginTop: -40, padding: 0, height: 150, display: showDatePicker ? "flex" : "none"}}
-                    itemStyle={{fontSize: 16}}
-                    selectedValue={sortType}
-                    mode='dialog'
-                    onValueChange={(itemValue, itemIndex) =>
-                        setSortType(itemValue)
-                    }>
-                        <Picker.Item label='Sort by:' value={null}/>
-                        <Picker.Item label="Title" value="title" />
-                        <Picker.Item label="Due Date" value="dueDate" />
-                        <Picker.Item label="Status" value="status" />
-                    </Picker>
-
-                <FlatList 
-                    data={Object.keys(categories)}
-                    keyExtractor={(item, index) => index.toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerClassName='flex flex-row gap-2 mt-4'
-                    renderItem={({item, index}) => (
-                        <TouchableOpacity 
-                        onPress={() => setLocation(item === location ? "" : item)}
-                        key={index} 
-                        className={`${item === location ? "bg-emerald-500" : "bg-[#EBEBEB]"} px-12 py-4 rounded-full`}>
-                                <Text className={`${item === location ? "font-rubik-medium text-white" : "font-rubik text-black-300"}`}>{item}</Text>
-                            </TouchableOpacity>
-                    )}
+                    }
                     />
-            </View>
-        }
-        />
+        </View>
+        
     )
 }
 

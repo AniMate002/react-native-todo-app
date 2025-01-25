@@ -10,10 +10,7 @@ const TabsLayout = () => {
     return (
         <Tabs 
         tabBar={props => <TabBar {...props}/>} 
-        screenOptions={{headerShown: false, tabBarStyle: {
-            display: 'none',
-            backgroundColor: 'transparent',
-        }}}>
+        screenOptions={{headerShown: false, tabBarHideOnKeyboard:true }}>
             <Tabs.Screen 
             name='index' 
             options={{

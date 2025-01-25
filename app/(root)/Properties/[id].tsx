@@ -1,16 +1,19 @@
 import Attachments from '@/components/Attachments'
+import Header from '@/components/Header'
 import Map from '@/components/Map'
 import icons from '@/constants/icons'
 import useMainStore from '@/store/mainStore'
 import { StatusType } from '@/utils/types'
 import { router, useLocalSearchParams } from 'expo-router'
+import { useColorScheme } from 'nativewind'
 import React, { useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ActivityIndicator, ScrollView, SafeAreaView, TouchableOpacity, Image, Platform, StatusBar } from 'react-native'
 
 const Properties = () => {
     const { id } = useLocalSearchParams()
-    const { getTaskById, currentTask, isLoading, changeTaskStatusById } = useMainStore()
+    const { getTaskById, currentTask, isLoading, changeTaskStatusById, deleteTaskById } = useMainStore()
     const [status, setStatus] = useState<StatusType>(currentTask?.status || "not started")
+    const { colorScheme } = useColorScheme()
     useEffect(() => {
         getTaskById(id.toString())
     }, [id])
@@ -23,10 +26,12 @@ const Properties = () => {
         setStatus(status)
     }
 
-    // useEffect(() => {
-    //     if(!currentTask || !currentTask.id) return
-    //     changeTaskStatusById(currentTask.id, status)
-    // }, [])
+    const handleDeleteTask = () => {
+        if(!isLoading && currentTask) {
+            router.navigate("/")
+            deleteTaskById(currentTask.id)
+        }
+    }
 
     const handlePushUpdates = () => {
         if(!currentTask || !currentTask.id) return
@@ -34,23 +39,21 @@ const Properties = () => {
         router.back()
     }
 
+
+
     return (
-        <SafeAreaView className='w-full h-full'>
-            <ScrollView className='w-full px-8 h-full'>
+        <View className='w-full h-full dark:bg-[#111111]'>
+            <StatusBar
+                barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+                backgroundColor={colorScheme === 'dark' ? '#111111' : "#f5f5f5"}
+            />
+            <SafeAreaView />
+            <ScrollView className='w-full px-8 h-full' contentContainerClassName='pb-32'>
                 {/* HEADER */}
-                <View className='flex flex-row  items-center mt-2'>
-                    <TouchableOpacity
-                    onPress={handlePushUpdates}>
-                        <View className='flex items-center justify-center size-16 bg-[#EBEBEB] rounded-full '>
-                            <Image source={icons.backArrow} className='size-6'/>
-                        </View>
-                    </TouchableOpacity>
-                    <Text className='font-rubik-medium ml-auto mr-auto'>Current Task</Text>
-                    <Image source={icons.bell} className='size-6'/>
-                </View>
+                <Header title='Current Task' customArrowButtonHandler={handlePushUpdates}/>
 
                 {/* MAIN */}
-                <Text className='mt-10 font-rubik-medium text-2xl text-black-300'>
+                <Text className='mt-10 font-rubik-medium text-2xl text-black-300 dark:text-white'>
                     {currentTask?.title}
                 </Text>
                 
@@ -60,38 +63,38 @@ const Properties = () => {
                 </View>
 
                 {/* DESCRIPTION */}
-                <Text className='font-rubik-medium text-xl mt-10'>Overview</Text>
-                <Text className='text-black-200 mt-2'>{currentTask?.description || "(No description)"}</Text>
+                <Text className='font-rubik-medium text-xl mt-10 text-black-300 dark:text-white'>Overview</Text>
+                <Text className='text-black-200 dark:text-black-100 mt-2'>{currentTask?.description || "(No description)"}</Text>
 
                 {/* CHANGE STATUS */}
-                <Text className='font-rubik-medium text-xl mt-10'>Change Status</Text>
+                <Text className='font-rubik-medium text-xl mt-10 text-black-300 dark:text-white'>Change Status</Text>
                 <View className='flex items-center w-full flex-row mt-2 gap-2'>
                     <TouchableOpacity onPress={() => handleChangeStatus("not started")}>
-                        <Text className={`flex-1 text-center ${status === "not started" ? "bg-red-200 text-red-700 font-rubik-medium" : "bg-[#dddddd] text-black-300"} p-2 rounded-xl`}>Not started</Text>
+                        <Text className={`flex-1 text-center ${status === "not started" ? "bg-red-200 text-red-700 font-rubik-medium" : "bg-[#dddddd] dark:bg-[#282828] text-black-300 dark:text-white"} p-2 rounded-xl`}>Not started</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleChangeStatus("in progress")}>
-                        <Text className={`flex-1 text-center ${status === "in progress" ? "bg-yellow-200 text-yellow-700 font-rubik-medium" : "bg-[#dddddd] text-black-300"} p-2 rounded-xl`}>In progress</Text>
+                        <Text className={`flex-1 text-center ${status === "in progress" ? "bg-yellow-200 text-yellow-700 font-rubik-medium" : "bg-[#dddddd] dark:bg-[#282828] text-black-300 dark:text-white"} p-2 rounded-xl`}>In progress</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleChangeStatus("completed")}>
-                        <Text className={`flex-1 text-center ${status === "completed" ? "bg-emerald-200 text-emerald-700 font-rubik-medium" : "bg-[#dddddd] text-black-300"} p-2 rounded-xl`}>Completed</Text>
+                        <Text className={`flex-1 text-center ${status === "completed" ? "bg-emerald-200 text-emerald-700 font-rubik-medium" : "bg-[#dddddd] dark:bg-[#282828] text-black-300 dark:text-white"} p-2 rounded-xl`}>Completed</Text>
                     </TouchableOpacity>
                 </View>
 
                 {/* DUE/START DATE */}
-                <Text className='font-rubik-medium text-xl mt-10'>Deadline</Text>
+                <Text className='font-rubik-medium text-xl mt-10 text-black-300 dark:text-white'>Deadline</Text>
                 <View className='flex items-center w-full flex-row'>
-                    <Text>Start Date</Text>
-                    <Text className='rounded-xl p-2 bg-[#dddddd] ml-auto'>{new Date(currentTask?.startDate || "").toDateString()}</Text>
-                    <Text className='rounded-xl p-2 bg-[#dddddd] ml-2'>{new Date(currentTask?.startDate || "").toTimeString().slice(0, 5)}</Text>
+                    <Text className='text-black-300 dark:text-white'>Start Date</Text>
+                    <Text className='rounded-xl p-2 bg-[#dddddd] dark:bg-[#343734] text-black-300 dark:text-white ml-auto'>{new Date(currentTask?.startDate || "").toDateString()}</Text>
+                    <Text className='rounded-xl p-2 bg-[#dddddd] dark:bg-[#343734] text-black-300 dark:text-white ml-2'>{new Date(currentTask?.startDate || "").toTimeString().slice(0, 5)}</Text>
                 </View>
                 <View className='flex items-center w-full flex-row mt-2'>
-                    <Text>Due Date</Text>
-                    <Text className='rounded-xl p-2 bg-[#dddddd] ml-auto'>{new Date(currentTask?.dueDate || "").toDateString()}</Text>
-                    <Text className='rounded-xl p-2 bg-[#dddddd] ml-2'>{new Date(currentTask?.dueDate || "").toTimeString().slice(0, 5)}</Text>
+                    <Text className='text-black-300 dark:text-white'>Due Date</Text>
+                    <Text className='rounded-xl p-2 bg-[#dddddd] dark:bg-[#343734] text-black-300 dark:text-white ml-auto'>{new Date(currentTask?.dueDate || "").toDateString()}</Text>
+                    <Text className='rounded-xl p-2 bg-[#dddddd] dark:bg-[#343734] text-black-300 dark:text-white ml-2'>{new Date(currentTask?.dueDate || "").toTimeString().slice(0, 5)}</Text>
                 </View>
 
                 {/* ATTACHMENTS */}
-                <Text className='font-rubik-medium text-xl mt-10'>Attachments</Text>
+                <Text className='font-rubik-medium text-xl mt-10 text-black-300 dark:text-white'>Attachments</Text>
                 {
                     currentTask?.attachments.length === 0
                     ?
@@ -103,10 +106,23 @@ const Properties = () => {
                 }
 
                 {/* MAP */}
-                <Text className='font-rubik-medium text-xl mt-10'>Geolocation</Text>
-                <Map geolocation={currentTask?.geolocation || {lat: 1.7, lng: 0.9}} handleAddMapMarker={() => ""}/>
+                {
+                    Platform.OS === "ios"
+                    ?
+                    <>
+                        <Text className='font-rubik-medium text-xl mt-10 text-black-300 dark:text-white'>Geolocation</Text>
+                        <Map geolocation={currentTask?.geolocation || {lat: 1.7, lng: 0.9}} handleAddMapMarker={() => ""}/>
+                    </>
+                    :
+                    null
+                }
+
+                {/* DELETE TASK BUTTON */}
+                <TouchableOpacity onPress={handleDeleteTask}>
+                    <Text className='w-full flex items-center justify-center bg-red-600 text-white font-medium text-center rounded-xl py-4 mt-4'>Delete Task</Text>
+                </TouchableOpacity>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 

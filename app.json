@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -45,6 +46,7 @@
       "eas": {
         "projectId": "d7245b5f-81c6-4314-a9b3-5df4c90d60a2"
       }
-    }
+    },
+    "owner": "animate"
   }
 }

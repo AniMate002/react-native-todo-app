@@ -5,6 +5,7 @@ import 'react-native-get-random-values';
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
 import useMainStore from "@/store/mainStore";
+import { View } from "react-native";
 
 
 

@@ -18,6 +18,7 @@ export interface ITask {
     attachments: Array<IAttachment>;
     personId: string;
     geolocation: GeolocationI;
+    timestamp: Date;
 }
 
 export interface GeolocationI {

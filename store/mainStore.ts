@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KEYS } from '@/utils/keys';
+import { createScheduledPushNotification } from '@/utils/pushNotifications';
 
 
 interface MainStoreI {
@@ -22,7 +23,10 @@ interface MainStoreI {
     getTaskById: (id: string) => Promise<void>;
     changeTaskStatusById: (id: string, status: StatusType) => Promise<void>;
     updateAvatar: (avatar: string) => Promise<void>;
-    getLogsFromStorage: () => Promise<void>
+    getLogsFromStorage: () => Promise<void>;
+    deleteTaskById: (id: string) => Promise<void>;
+    clearAllStorage: () => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 const useMainStore = create<MainStoreI>((set, get) => ({
@@ -138,6 +142,10 @@ const useMainStore = create<MainStoreI>((set, get) => ({
 
             const data = await res.json()
             set({tasks: [...get().tasks, data], error: null, isError: false, logs: [...get().logs, newLog]})  
+
+            // CREATE PUSH NOTIFICATION
+            await createScheduledPushNotification(task.dueDate)
+
             const oldLogsStr = await AsyncStorage.getItem(KEYS.storageKeyLogs)
             const oldLogs = JSON.parse(oldLogsStr || "[]")
             await AsyncStorage.setItem(KEYS.storageKeyLogs, JSON.stringify([...oldLogs, newLog]))
@@ -197,6 +205,8 @@ const useMainStore = create<MainStoreI>((set, get) => ({
             const oldLogsStr = await AsyncStorage.getItem(KEYS.storageKeyLogs)
             const oldLogs = JSON.parse(oldLogsStr || "[]")
             await AsyncStorage.setItem(KEYS.storageKeyLogs, JSON.stringify([...oldLogs, newLog]))
+
+            
         }catch (error) {
             console.log(error)
             set({isError: true, error: error as Error })
@@ -240,6 +250,47 @@ const useMainStore = create<MainStoreI>((set, get) => ({
             set({logs, isError: false, error: null})
             console.log("LOGS: ", logs)
         } catch (error) {
+            console.log(error)
+            set({isError: true, error: error as Error })
+        }finally{
+            set({isLoading: false})
+        }
+    },
+    deleteTaskById: async (id: string) => {
+        try{
+            set({isLoading: true})
+            const updatedTasks = get().tasks.filter(task => task.id !== id)
+            await AsyncStorage.setItem(KEYS.storageKeyTasks, JSON.stringify(updatedTasks))
+            const res = await fetch(`https://json-server-todo-react-native.vercel.app/tasks/${id}`, {
+                method: "DELETE"
+            })
+            const data = await res.json()
+            console.log("DELTETIng DATA FROM SERVER: ", data)
+            set({tasks: updatedTasks, isError: false, error: null})
+
+
+            const newLog: ILog = {timestamp: new Date(), type: 'task deleted'} 
+
+            const oldLogsStr = await AsyncStorage.getItem(KEYS.storageKeyLogs)
+            const oldLogs = JSON.parse(oldLogsStr || "[]")
+            await AsyncStorage.setItem(KEYS.storageKeyLogs, JSON.stringify([...oldLogs, newLog]))
+        }catch (error) {
+            console.log(error)
+            set({isError: true, error: error as Error })
+        }finally{
+            set({isLoading: false})
+        }
+    },
+    clearAllStorage: async () => {
+        await AsyncStorage.clear()
+    },
+    logout: async () => {
+        try{
+            set({isLoading: true})
+            await AsyncStorage.clear()
+            set({currentTask: null, authUser: null, tasks: [], logs: [], allUsers: [], isError: false, error: null})
+            console.log("LOGOUT SUCCESSFULLY")
+        }catch (error) {
             console.log(error)
             set({isError: true, error: error as Error })
         }finally{

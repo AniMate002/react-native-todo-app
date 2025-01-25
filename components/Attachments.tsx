@@ -25,7 +25,7 @@ const Attachments:React.FC<AttachmentsProps> = ({ attachments, handleDeleteAttac
                 key={index} 
                 className='flex items-center gap-2'>
                     <Image source={{uri: attachment.uri}} className='size-24 rounded-xl'/>
-                    <Text>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
+                    <Text className='text-black-300 dark:text-white'>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
                 </TouchableOpacity>
             ))}
             {attachments.filter(singleAttachment => !isImage(singleAttachment.mimeType)).map((attachment, index) => (
@@ -36,7 +36,7 @@ const Attachments:React.FC<AttachmentsProps> = ({ attachments, handleDeleteAttac
                     <View className='flex items-center justify-center size-24 rounded-xl bg-emerald-500  border-emerald-700 '>
                         <Text className='text-white font-rubik-medium'>File .{attachment.name.split(".").pop()}</Text>
                     </View>
-                    <Text>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
+                    <Text className='text-black-300 dark:text-white'>{attachment.name.length > 10 ? attachment.name.slice(0, 8) + "..." : attachment.name}</Text>
                 </TouchableOpacity>
             ))}
         </View>

@@ -11,9 +11,9 @@ interface CategoryProps {
 const Category:React.FC<CategoryProps> = (props) => {
     const randomColor = colors[props.index];
     return (
-            <View style={{backgroundColor: randomColor?.bg}} className='w-[150px] h-[150px] rounded-2xl relative'>
+            <View style={{backgroundColor: randomColor?.bg}} className='w-[150px] h-[150px] rounded-2xl relative shadow-sm shadow-black-100 dark:shadow-none mb-2'>
                 <Text style={{color: randomColor?.text}} className='text-xl font-rubik-medium px-4 pt-4 '>{props.category}</Text>
-                <Text className='px-4 text-black-200 font-rubik '>0{props.index} Tasks</Text>
+                {/* <Text className='px-4 text-black-200 font-rubik '>0{props.index} Tasks</Text> */}
                 <Image source={images[props.category]} resizeMode='contain' className='size-32 absolute -bottom-2 right-0'/>
             </View>
     );

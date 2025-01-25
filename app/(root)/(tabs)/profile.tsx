@@ -5,6 +5,8 @@ import React, { useEffect } from 'react'
 import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker';
 import Log from '@/components/Log'
+import Header from '@/components/Header'
+import { router } from 'expo-router'
 
 const Profile = () => {
     const { authUser, isLoading, updateAvatar, getLogsFromStorage, logs } = useMainStore()
@@ -37,20 +39,18 @@ const Profile = () => {
         }
     }
     return (
-        <SafeAreaView className='h-full w-full'>
+        <View className='h-full w-full dark:bg-[#111111]'>
+            <SafeAreaView />
             <ScrollView className='w-full h-full px-8' contentContainerClassName='pb-40'>
                 {/* HEADER */}
-                <View className='flex items-center justify-between flex-row mt-4'>  
-                    <Text className='text-2xl font-rubik-medium'>Profile</Text>
-                    <Image source={icons.bell} className='size-6'/>
-                </View>
+                <Header showLogOutBtn title='Profile' customArrowButtonHandler={() => router.back()}/>
 
                 {/* AVATAR */}
-                <View className='flex items-center mt-10 pb-5 border-b-2 border-[#dddddd]'>  
+                <View className='flex items-center mt-10 pb-5 border-b-2 border-[#dddddd] dark:border-[#222222]'>  
                     <TouchableOpacity onPress={handlePickAvatar}>
                         <Image source={{uri: authUser?.avatar || "https://avatar.iran.liara.run/public/8"}} resizeMode='cover' className='size-40 rounded-full'/>
                     </TouchableOpacity>
-                    <Text className='mt-4 text-3xl font-rubik-medium text-black-300'>{ authUser?.name }</Text>
+                    <Text className='mt-4 text-3xl font-rubik-medium text-black-300 dark:text-white'>{ authUser?.name }</Text>
                 </View>
 
 
@@ -60,13 +60,13 @@ const Profile = () => {
                 {
                     logs.length === 0
                     ?
-                    <Text>Empty</Text>
+                    <Text className='text-black-300 dark:text-white'>Empty</Text>
                     :
                     logs?.sort((a, b) => b.timestamp.toLocaleString().localeCompare(a.timestamp.toLocaleString()))?.map(log => <Log key={log.timestamp.toString()} {...log}/>)
                 }
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 
